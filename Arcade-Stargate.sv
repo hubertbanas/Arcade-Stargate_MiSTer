@@ -1,5 +1,5 @@
 //============================================================================
-//  Arcade: Robotron
+//  Arcade: Stargate
 //
 //  Port to MiSTer
 //  Copyright (C) 2018 
@@ -92,8 +92,8 @@ localparam CONF_STR = {
 	"O34,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"-;",
 	"R0,Reset;",
-	"J,Fire,Smartbomb,Reverse,Inviso,Hyperspace,Start 1,Start 2,Coin;",
-	"V,v2.00.",`BUILD_DATE
+	"J,Fire,Smartbomb,Reverse,Inviso,Hyperspace,Start 1P,Start 2P;",
+	"V,v",`BUILD_DATE
 };
 
 ////////////////////   CLOCKS   ///////////////////
@@ -158,10 +158,6 @@ always @(posedge clk_sys) begin
 	
 	if(old_state != ps2_key[10]) begin
 		casex(code)
-//			'hX75: btn_up           <= pressed; // up
-//			'hX72: btn_down        	<= pressed; // down
-//			'hX6B: btn_left      	<= pressed; // left
-//			'hX74: btn_right       	<= pressed; // right
 			'h023: btn_hyperspace	<= pressed; // D
 			'h01D: btn_fire  			<= pressed; // W
 			'h01C: btn_smartbomb    <= pressed; // A
@@ -171,12 +167,10 @@ always @(posedge clk_sys) begin
 			'h076: slam				   <= pressed; // ESC
 			'h083: HSreset			   <= pressed; // F7
 
-			'h00C: mcoin		   	<= pressed; // F4	
-			'h003: rcoin			   <= pressed; // F5			
-			
 			'h005: btn_one_player  <= pressed; // F1
 			'h006: btn_two_players <= pressed; // F2
 			'h004: lcoin	        <= pressed; // F3
+			'h00C: rcoin		     <= pressed; // F4	
 
 			'h016: btn_one_player  <= pressed; // 1
 			'h01e: btn_two_players <= pressed; // 2
@@ -210,31 +204,18 @@ reg rcoin = 0;
 reg slam = 0;
 reg autoup = 0;
 reg advance = 0;
-reg mcoin = 0;
 reg btn_one_player = 0;
 reg btn_two_players = 0;
-reg btn_mleft = 0;
-reg btn_mright = 0;
-reg btn_mdown = 0;
-reg btn_mup = 0;
-reg btn_left = 0;
-reg btn_right = 0;
 reg btn_down = 0;
 reg btn_up = 0;
 
 wire [15:0] joy = joy_0 | joy_1;
 
-wire [7:0] sw = {btn_one_player | joy[9], slam, rcoin | joy[11], dummy, dummy, HSreset, advance, autoup};
+wire [7:0] sw = {btn_one_player | joy[9], slam, rcoin | lcoin | joy[9] | joy[10], dummy, dummy, HSreset, advance, autoup};
 
-//wire fire = status[5] || joy[7:4];
-
-/*wire [8:0] jc =  
-       {btn_two_players  | joy[8], btn_right | joy[4], btn_left  | joy[5], btn_down | joy[6], btn_up | joy[7],
-        btn_mright      | joy[0], btn_mleft | joy[1], btn_mdown | joy[2], btn_mup  | joy[3]} ;
-*/		  
 wire [8:0] jc = 
-       {btn_two_players | joy[10], btn_inviso | joy[7], btn_up | joy[3], btn_down | joy[2], btn_reverse | joy[6],
-       btn_hyperspace | btn_one_player | joy[8], btn_smartbomb | joy[5], btn_thrust | joy[0] | joy[1], btn_fire | joy[4]};			  
+       {btn_two_players | joy[10], btn_inviso    | joy[7], btn_up     | joy[3], btn_down | joy[2], btn_reverse | joy[6],
+        btn_hyperspace  | joy[8],  btn_smartbomb | joy[5], btn_thrust | joy[0] | joy[1], btn_fire | joy[4]};			  
 
 ///////////////////////////////////////////////////////////////////
 
