@@ -24,46 +24,43 @@ architecture RTL of RAMS is
 
 begin
 
-	wramL_we <= '1' when ENL = '1' and WE = '1' and ADDR(15 downto 8) < "11000000" else '0';
-	wramU_we <= '1' when ENH = '1' and WE = '1' and ADDR(15 downto 8) < "11000000" else '0';
-	cmos_we  <= '1' when WE = '1' and ADDR(15 downto 10) = "110011" else '0';
+wramL_we <= '1' when ENL = '1' and WE = '1' and ADDR(15 downto 8) < "11000000" else '0';
+wramU_we <= '1' when ENH = '1' and WE = '1' and ADDR(15 downto 8) < "11000000" else '0';
+cmos_we  <= '1' when WE = '1' and ADDR(15 downto 10) = "110011" else '0';
 	
 	-- cpu/video wram low
-cpu_video_low : entity work.gen_ram
-generic map( dWidth => 4, aWidth => 16)
+cpu_video_low : entity work.spram generic map(16,4)
 port map(
-	clk  => CLK,
-	we   => wramL_we,
-	addr => ADDR(15 downto 0),
-	d    => DI(3 downto 0),
-	q    => ram_out(3 downto 0)
+	clock   => CLK,
+	wren    => wramL_we,
+	address => ADDR(15 downto 0),
+	data    => DI(3 downto 0),
+	q       => ram_out(3 downto 0)
 );
 
-cpu_video_high : entity work.gen_ram
-generic map( dWidth => 4, aWidth => 16)
+cpu_video_high : entity work.spram generic map(16,4)
 port map(
-	clk  => CLK,
-	we   => wramU_we,
-	addr => ADDR(15 downto 0),
-	d    => DI(7 downto 4),
-	q    => ram_out(7 downto 4)
+	clock   => CLK,
+	wren    => wramU_we,
+	address => ADDR(15 downto 0),
+	data    => DI(7 downto 4),
+	q       => ram_out(7 downto 4)
 );
 			   
 
-	ram_data(7 downto 4) <= ram_out(7 downto 4) when ENH = '1' else "0000";
-	ram_data(3 downto 0) <= ram_out(3 downto 0) when ENL = '1' else "0000";
-	DO  <= cmos_out when ADDR(15 downto 10) = "110011" else ram_data;
-	
--- cmos ram 
-cmos_ram : entity work.robotron_cmos_ram
-generic map( dWidth => 8, aWidth => 10)
-port map(
-	clk  => CLK,
-	we   => cmos_we,
-	addr => ADDR(9 downto 0),
-	d    => DI,
-	q    => cmos_out
-);	
+ram_data(7 downto 4) <= ram_out(7 downto 4) when ENH = '1' else "0000";
+ram_data(3 downto 0) <= ram_out(3 downto 0) when ENL = '1' else "0000";
+DO  <= cmos_out when ADDR(15 downto 10) = "110011" else ram_data;
+
+cmos_ram : work.spram generic map(10,8,"cmos.mif","CMOS")
+port map
+(
+	clock   => CLK,
+	address => ADDR(9 downto 0),
+	data    => DI,
+	wren    => cmos_we,
+	q       => cmos_out
+);
 
 
-end RTL;	
+end RTL;

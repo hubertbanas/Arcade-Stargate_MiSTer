@@ -89,7 +89,7 @@ localparam CONF_STR = {
 	"A.STARGATE;;", 
 	"-;",
 	"O1,Aspect Ratio,Original,Wide;",
-	"O34,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
+	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"-;",
 	"R0,Reset;",
 	"J,Fire,Smartbomb,Reverse,Inviso,Hyperspace,Start 1P,Start 2P;",
@@ -231,9 +231,11 @@ assign HDMI_B   = VGA_B;
 assign HDMI_DE  = VGA_DE;
 assign HDMI_HS  = VGA_HS;
 assign HDMI_VS  = VGA_VS;
-assign HDMI_SL  = 0;
+assign HDMI_SL  = sl[1:0];
 
-wire [1:0] scale = status[4:3];
+wire [2:0] scale = status[5:3];
+wire [2:0] sl = scale ? scale - 1'd1 : 3'd0;
+wire       scandoubler = (scale || forced_scandoubler); 
 
 video_mixer #(.HALF_DEPTH(1)) video_mixer
 (
@@ -242,8 +244,7 @@ video_mixer #(.HALF_DEPTH(1)) video_mixer
 	.ce_pix(!pcnt[1:0]),
 	.ce_pix_out(VGA_CE),
 
-	.scanlines({scale == 3, scale == 2}),
-	.scandoubler(scale || forced_scandoubler),
+	.scanlines(0),
 	.hq2x(scale==1),
 	.mono(0),
 

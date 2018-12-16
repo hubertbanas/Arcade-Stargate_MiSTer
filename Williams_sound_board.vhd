@@ -121,7 +121,7 @@ port map(
 -- cpu program rom
 roms_cs  <= '1' when dn_addr(15 downto 12) = "1100"   else '0';
 
-cpu_prog_rom : work.dpram generic map (12,8)
+cpu_prog_rom : work.dpram generic map(12)
 port map
 (
 	clock_a   => clk_sys,
@@ -135,14 +135,14 @@ port map
 );
 
 -- cpu wram 
-cpu_ram : entity work.gen_ram
-generic map( dWidth => 8, aWidth => 7)
-port map(
-	clk  => clk_1p79,  -- 3p58/2
-	we   => wram_we,
-	addr => cpu_addr(6 downto 0),
-	d    => cpu_do,
-	q    => wram_do
+cpu_ram : work.spram generic map(7)
+port map
+(
+	clock   => clk_1p79,  -- 3p58/2
+	wren    => wram_we,
+	address => cpu_addr(6 downto 0),
+	data    => cpu_do,
+	q       => wram_do
 );
 
 -- pia I/O

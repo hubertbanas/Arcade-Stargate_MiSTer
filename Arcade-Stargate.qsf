@@ -64,7 +64,7 @@ set_global_assignment -name REMOVE_REDUNDANT_LOGIC_CELLS ON
 set_global_assignment -name AUTO_DELAY_CHAINS_FOR_HIGH_FANOUT_INPUT_PINS ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
 set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
-set_global_assignment -name SYNTH_GATED_CLOCK_CONVERSION ON
+set_global_assignment -name SYNTH_GATED_CLOCK_CONVERSION OFF
 set_global_assignment -name SEED 1
 
 #============================================================
@@ -370,8 +370,7 @@ set_global_assignment -name PRE_FLOW_SCRIPT_FILE "quartus_sh:sys/build_id.tcl"
 set_global_assignment -name CDF_FILE jtag.cdf
 set_global_assignment -name QIP_FILE sys/sys.qip
 set_global_assignment -name VHDL_FILE dpram.vhd
-set_global_assignment -name VHDL_FILE gen_ram.vhd
-set_global_assignment -name VHDL_FILE robotron_cmos_ram.vhd
+set_global_assignment -name VHDL_FILE spram.vhd
 set_global_assignment -name VHDL_FILE williams_rom.vhd
 set_global_assignment -name VHDL_FILE williams_ram.vhd
 set_global_assignment -name VHDL_FILE pia6821.vhd
