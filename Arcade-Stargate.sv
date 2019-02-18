@@ -92,7 +92,7 @@ localparam CONF_STR = {
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"-;",
 	"R0,Reset;",
-	"J,Fire,Smartbomb,Reverse,Inviso,Hyperspace,Start 1P,Start 2P;",
+	"J1,Fire,Smartbomb,Reverse,Inviso,Hyperspace,Start 1P,Start 2P;",
 	"V,v",`BUILD_DATE
 };
 
@@ -219,38 +219,23 @@ wire [8:0] jc =
 
 ///////////////////////////////////////////////////////////////////
 
-wire [2:0] r,g,ri,gi;
-wire [1:0] b,bi;
-wire vs,hs;
-assign VGA_CLK  = clk_sys;
-assign HDMI_CLK = VGA_CLK;
-assign HDMI_CE  = VGA_CE;
-assign HDMI_R   = VGA_R;
-assign HDMI_G   = VGA_G;
-assign HDMI_B   = VGA_B;
-assign HDMI_DE  = VGA_DE;
-assign HDMI_HS  = VGA_HS;
-assign HDMI_VS  = VGA_VS;
-assign HDMI_SL  = sl[1:0];
+wire [2:0] r,g;
+wire [1:0] b;
 
-wire [2:0] scale = status[5:3];
-wire [2:0] sl = scale ? scale - 1'd1 : 3'd0;
-wire       scandoubler = (scale || forced_scandoubler); 
-
-video_mixer #(.HALF_DEPTH(1)) video_mixer
+arcade_fx #(360,8) arcade_video
 (
 	.*,
-	.clk_sys(VGA_CLK),
+
+	.clk_video(clk_sys),
 	.ce_pix(!pcnt[1:0]),
-	.ce_pix_out(VGA_CE),
 
-	.scanlines(0),
-	.hq2x(scale==1),
-	.mono(0),
+	.RGB_in({r,g,b}),
+	.HBlank(HBlank),
+	.VBlank(VBlank),
+	.HSync(HSync),
+	.VSync(VSync),
 
-	.R({r,r[2]}),
-	.G({g,g[2]}),
-	.B({b,b})
+	.fx(status[5:3])
 );
 
 wire [7:0] audio;
@@ -282,6 +267,10 @@ williams_cpu williams_cpu
 	.audio_out(audio)
 
 );
+
+wire [2:0] ri,gi;
+wire [1:0] bi;
+wire vs,hs;
 
 // scanhalver :)
 dpram #(9) line
